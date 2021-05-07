@@ -1,7 +1,13 @@
 .section {
     position: relative;
-    padding-top: $spacer * 4;
-    padding-bottom: $spacer * 4;
+    padding-top: $spacer;
+    padding-bottom: $spacer;
+}
+
+.section-init {
+    position: relative;
+    padding-top: $spacer * 5;
+    padding-bottom: $spacer;
 }
 
 .section-xl {

@@ -28,11 +28,13 @@ import Landing from "views/examples/Landing.js";
 import Login from "views/examples/Login.js";
 import Profile from "views/examples/Profile.js";
 import Register from "views/examples/Register.js";
+import Inicio from "views/paginas/Inicio";
 
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
       <Route path="/" exact render={props => <Index {...props} />} />
+      <Route path="/inicio" exact render={props => <Inicio {...props} />} />
       <Route
         path="/landing-page"
         exact

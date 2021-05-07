@@ -190,9 +190,11 @@
   top: 0;
   width: 100%;
   z-index: 100;
-  background-color: transparent !important;
+  background-color: theme-color("light") !important;
   border: 0;
-  box-shadow: none;
+  box-shadow: 0 1px 10px rgba(130, 130, 134, 0.1);
+  padding-top: .5rem;
+  padding-bottom: .5rem;
 
   .navbar-brand {
     color: rgba(255, 255, 255, 1);
