@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
-  Container, Row, FormGroup, InputGroup, InputGroupAddon, InputGroupText, Input
+  Container, Row, FormGroup, InputGroup, InputGroupAddon, InputGroupText, Input,
+  Col
 } from "reactstrap";
 import NavbarE from "components/Navbars/NavbarE";
-import RestaurantMiniInfo from "components/Restaurant/RestaurantMiniInfo";
-import { restaurantesGetAll, restaurantesGetByDescripcion } from "services/restaurante";
+import RestaurantMiniInfo from "./../../components/Restaurant/RestaurantMiniInfo";
+import { restauranteGetAll, restauranteGetByDescripcion } from "services/restaurante";
 
 export default function Inicio(params) {
   const [state, setState] = useState("")
@@ -16,14 +17,12 @@ export default function Inicio(params) {
   }, [restaurantes])
 
   const buscarTodosRestaurantes = async () => {
-    var respuesta = await restaurantesGetAll()
-    console.log(respuesta)
+    var respuesta = await restauranteGetAll()
     setRestaurantes(respuesta)
   }
 
   const filtrarRestaurantes = async () => {
-    var respuesta = await restaurantesGetByDescripcion(state)
-    console.log(respuesta)
+    var respuesta = await restauranteGetByDescripcion(state)
     setRestaurantes(respuesta)
   }
 
@@ -54,10 +53,26 @@ export default function Inicio(params) {
         </section>
         <section className="section">
           <Container>
-            <Row xs="2">
+            <Row >
               {
                 restaurantes.map(rest => {
-                  return <RestaurantMiniInfo restaurante={rest} />
+                  return <>
+                    <Col xs="4">
+                      <RestaurantMiniInfo restaurante={rest} />
+                    </Col>
+                    <Col xs="4">
+                      <RestaurantMiniInfo restaurante={rest} />
+                    </Col>
+                    <Col xs="4">
+                      <RestaurantMiniInfo restaurante={rest} />
+                    </Col>
+                    <Col xs="4">
+                      <RestaurantMiniInfo restaurante={rest} />
+                    </Col>
+                    <Col xs="4">
+                      <RestaurantMiniInfo restaurante={rest} />
+                    </Col>
+                  </>
                 })
               }
             </Row>
@@ -67,53 +82,3 @@ export default function Inicio(params) {
     </>
   )
 }
-
-// class Inicio extends React.Component {
-//   constructor(props) {
-//     super(props);
-
-//     this.state = {
-//       filtroBusqueda: "",
-//     };
-//   }
-//   componentDidMount() {
-//     document.documentElement.scrollTop = 0;
-//     document.scrollingElement.scrollTop = 0;
-//     this.refs.main.scrollTop = 0;
-//   }
-
-//   render() {
-//     return (
-//       <>
-//         <NavbarE />
-//         <main ref="main">
-//           <section className="section-init">
-//             <Container>
-//               <FormGroup className="mb-0">
-//                 <InputGroup className="input-group-alternative">
-//                   <InputGroupAddon addonType="prepend">
-//                     <InputGroupText>
-//                       <i className="fa fa-search" />
-//                     </InputGroupText>
-//                   </InputGroupAddon>
-//                   <Input placeholder="Buscar local gastronónimco" type="text" onKeyPress={event => this.actualizarBusqueda(event.target.value)} />
-//                 </InputGroup>
-//               </FormGroup>
-//             </Container>
-//           </section>
-//           <section className="section">
-//             <Container>
-//               <Row xs="2">
-//                 <RestaurantMiniInfo>
-//                 </RestaurantMiniInfo>
-
-//                 <RestaurantMiniInfo>
-//                 </RestaurantMiniInfo>
-//               </Row>
-//             </Container>
-//           </section>
-//         </main>
-//       </>
-//     );
-//   }
-// }

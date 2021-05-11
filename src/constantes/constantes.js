@@ -1,1 +1,1 @@
-export const server = "localhost:30000/"
+export const server = "https://restaurappnte.herokuapp.com/v1/public"

@@ -24,8 +24,9 @@ import "assets/vendor/font-awesome/css/font-awesome.min.css";
 import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
 import Index from "views/Index.js";
-import Landing from "views/examples/Landing.js";
-import Login from "views/examples/Login.js";
+import Landing from "./views/examples/Landing.js";
+import Login from './views/paginas/Login'
+import Registro from './views/paginas/Registro'
 import Profile from "views/examples/Profile.js";
 import Register from "views/examples/Register.js";
 import Inicio from "views/paginas/Inicio";
@@ -40,7 +41,7 @@ ReactDOM.render(
         exact
         render={props => <Landing {...props} />}
       />
-      <Route path="/login-page" exact render={props => <Login {...props} />} />
+      <Route path="/login" exact render={props => <Login {...props} />} />
       <Route
         path="/profile-page"
         exact
@@ -50,6 +51,11 @@ ReactDOM.render(
         path="/register-page"
         exact
         render={props => <Register {...props} />}
+      />
+      <Route
+        path="/registro"
+        exact
+        render={props => <Registro {...props} />}
       />
       <Redirect to="/" />
     </Switch>

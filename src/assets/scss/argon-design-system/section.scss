@@ -2,6 +2,10 @@
     position: relative;
     padding-top: $spacer;
     padding-bottom: $spacer;
+
+    .col{
+        padding-top: 10px;
+    }
 }
 
 .section-init {

@@ -1,14 +1,14 @@
 import { server } from "constantes/constantes";
-const servicio = "restaurantes_comentarios";
+const servicio = "comentario";
 const axios = require("axios")
 
-export const restaurantesComentariosGetAll = async () => {
+export const comentariosGetAll = async () => {
   const url = `${server}/${servicio}/`;
   return await axios.get(url)
     .then(response => response.json())
 };
 
-export const restaurantesComentariosGetByRestaurante = async (id) => {
+export const comentariosGetByRestaurante = async (id) => {
   const where = `?and=(activo.is.true,restaurante_id.eq.${id})`
   const url = `${server}/${servicio}${where}`;
   const respuesta = await axios({

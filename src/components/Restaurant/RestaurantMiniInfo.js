@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Card, UncontrolledCarousel } from "reactstrap";
 import Rating from '@material-ui/lab/Rating';
-import { restaurantesComentariosGetByRestaurante } from 'services/restaurateComentario';
+import { comentariosGetByRestaurante } from 'services/restaurateComentario';
 
 const items = [
   {
@@ -18,18 +18,18 @@ const items = [
   }
 ];
 
-export default function RestaurantMiniInfo(restaurant) {
+export default function RestaurantMiniInfo(props) {
+  const restaurante = props.restaurante
   const [calificacion, setCalificacion] = useState(0)
 
-  useEffect (()=>{
+  useEffect(() => {
     if (calificacion === 0) {
       obtenerCalificacion()
     }
   }, [calificacion])
 
   const obtenerCalificacion = async () => {
-    let restCalif = await restaurantesComentariosGetByRestaurante(restaurant.id)
-    console.log(restCalif)
+    let restCalif = await comentariosGetByRestaurante(restaurante.id)
     setCalificacion(restCalif)
   }
 
@@ -46,7 +46,7 @@ export default function RestaurantMiniInfo(restaurant) {
             <Col className="mb-lg-auto" lg="6">
               <Row>
                 <small className="text-uppercase text-muted font-weight-bold font-italic">
-                  {restaurant.nombre}
+                  {restaurante.nombre}
                 </small>
               </Row>
               <Row>
@@ -55,11 +55,7 @@ export default function RestaurantMiniInfo(restaurant) {
                   value={calificacion}
                 />
               </Row>
-              <Row>
-                <Col lg="11">
-                  <p> {restaurant.descipcion.slice(0, 127) + "..."}</p>
-                </Col>
-              </Row>
+              <p style={{ fontSize: "smaller" }}> {restaurante.descripcion.substring(0, 85) + "..."}</p>
             </Col>
           </Row>
         </Card>
