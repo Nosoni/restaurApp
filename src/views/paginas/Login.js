@@ -6,11 +6,22 @@ import {
 } from "reactstrap";
 import NavbarE from "components/Navbars/NavbarE.js";
 import CardFooter from "reactstrap/lib/CardFooter";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 
 export default function Login(props) {
+  const schema = yup.object().shape({
+    usuario: yup.string().required("Favor ingresar usuario"),
+    password: yup.string().required("Favor ingresar contraseña"),
+  });;
+  const { register, handleSubmit, formState: { errors }, } = useForm({
+    resolver: yupResolver(schema)
+  })
   const handleClickResgitrar = () => {
     props.history.push("registro")
   }
+  const onSubmit = data => console.log(data);
 
   return (
     <>
@@ -25,18 +36,28 @@ export default function Login(props) {
                     <div className="text-center text-muted mb-4">
                       <small>Introduzca sus credenciales</small>
                     </div>
-                    <Form role="form">
-                      <FormGroup className="mb-3">
+                    <Form role="form" onSubmit={handleSubmit(onSubmit)}>
+                      <FormGroup
+                        className={errors.usuario?.message.length > 0 ? 'has-danger' : 'mb-3'}
+                      >
+                        <label className="label-invalid">{errors.usuario?.message}</label>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
                               <i className="ni ni-circle-08" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Usuario" type="text" />
+                          <Input
+                            placeholder="Usuario" 
+                            type="text"
+                            {...register("usuario")}
+                          />
                         </InputGroup>
                       </FormGroup>
-                      <FormGroup>
+                      <FormGroup
+                        className={errors.usuario?.message.length > 0 ? 'has-danger' : 'mb-3'}
+                      >
+                        <label className="label-invalid">{errors.password?.message}</label>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
@@ -47,6 +68,7 @@ export default function Login(props) {
                             placeholder="Password"
                             type="password"
                             autoComplete="off"
+                            {...register("password")}
                           />
                         </InputGroup>
                       </FormGroup>
@@ -54,7 +76,7 @@ export default function Login(props) {
                         <Button
                           className="my-4"
                           color="primary"
-                          type="button"
+                          type="submit"
                         >
                           Ingresar
                           </Button>

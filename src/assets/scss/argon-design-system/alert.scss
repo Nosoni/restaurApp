@@ -1,7 +1,11 @@
 .alert {
+    margin-top: 60px;
     padding: $alert-padding-y $alert-padding-x;
     border: 0;
     font-size: $font-size-sm;
+    position: absolute;
+    right: 25px;
+    display: inline-block;
     @include border-radius($alert-border-radius);
 
     .alert-inner--icon {
@@ -18,6 +22,7 @@
     .alert-inner--text {
         display: inline-block;
         vertical-align: middle;
+        padding-right: 25px;
     }
 }
 

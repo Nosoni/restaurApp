@@ -17,7 +17,7 @@ export default function NavbarE() {
             <NavbarBrand className="mr-lg-5" to="/inicio" tag={Link}>
               <img
                 alt="..."
-                src={require("assets/img/brand/argon-react-white.png")}
+                src={require("assets/img/brand/dish2.svg")}
               />
             </NavbarBrand>
             <Nav className="align-items-lg-center ml-lg-auto" navbar>

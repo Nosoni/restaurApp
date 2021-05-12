@@ -4,6 +4,10 @@ label {
     font-size: $font-size-sm;
 }
 
+.label-invalid{
+  color: $form-feedback-invalid-color;
+}
+
 .form-control {
     font-size: $input-btn-font-size;
     transition: $transition-base;
@@ -83,7 +87,7 @@ textarea[resize="horizontal"] {
     display: inline-block;
     position: absolute;
     right: 15px;
-    top: 2px;
+    top: 34px;
     transform: translateY(50%);
     border-radius: 50%;
     font-size: 9px;
