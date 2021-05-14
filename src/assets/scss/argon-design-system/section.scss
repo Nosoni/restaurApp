@@ -3,7 +3,7 @@
     padding-top: $spacer;
     padding-bottom: $spacer;
 
-    .col{
+    .col-4{
         padding-top: 10px;
     }
 }
@@ -28,6 +28,15 @@
     padding-top: $spacer * 2;
     padding-bottom: $spacer * 2;
 }
+
+.section-loader {
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    display: flex;
+    height: 130px;
+    position: relative;
+} 
 
 // Hero sections
 .section-hero {

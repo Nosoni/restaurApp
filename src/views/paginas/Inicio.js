@@ -4,12 +4,22 @@ import {
   Col
 } from "reactstrap";
 import NavbarE from "components/Navbars/NavbarE";
-import RestaurantMiniInfo from "./../../components/Restaurant/RestaurantMiniInfo";
-import { restauranteGetAll, restauranteGetByDescripcion } from "services/restaurante";
+import Restaurante from "../../components/Restaurante/Restaurante";
+import { restauranteGetAll, restauranteGetByDescripcion } from "../../services/restaurante";
+import ImageUploader from 'react-images-upload';
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from "react-promise-tracker";
+import Loader from "../../components/Loader";
 
 export default function Inicio(params) {
-  const [state, setState] = useState("")
   const [restaurantes, setRestaurantes] = useState([])
+  const [pictures, setPictures] = useState([]);
+  const { promiseInProgress } = usePromiseTracker();
+
+  // const onDrop = picture => {
+  //   console.log("hola", picture)
+  //   setPictures([...pictures, picture]);
+  // };
 
   useEffect(() => {
     if (restaurantes.length === 0)
@@ -17,19 +27,17 @@ export default function Inicio(params) {
   }, [restaurantes])
 
   const buscarTodosRestaurantes = async () => {
-    var respuesta = await restauranteGetAll()
-    setRestaurantes(respuesta)
-  }
-
-  const filtrarRestaurantes = async () => {
-    var respuesta = await restauranteGetByDescripcion(state)
+    var respuesta = await trackPromise(restauranteGetAll())
+    console.log(respuesta)
     setRestaurantes(respuesta)
   }
 
   const actualizarBusqueda = async (event) => {
-    setState(event.target.value)
     if (event.key === "Enter") {
-      filtrarRestaurantes()
+      setRestaurantes([])
+      const respuesta = await trackPromise(restauranteGetByDescripcion(event.target.value))
+      console.log(respuesta)
+      setRestaurantes(respuesta)
     }
   };
 
@@ -53,28 +61,21 @@ export default function Inicio(params) {
         </section>
         <section className="section">
           <Container>
-            <Row >
-              {
-                restaurantes.map(rest => {
-                  return <>
-                    <Col xs="4">
-                      <RestaurantMiniInfo restaurante={rest} />
-                    </Col>
-                    <Col xs="4">
-                      <RestaurantMiniInfo restaurante={rest} />
-                    </Col>
-                    <Col xs="4">
-                      <RestaurantMiniInfo restaurante={rest} />
-                    </Col>
-                    <Col xs="4">
-                      <RestaurantMiniInfo restaurante={rest} />
-                    </Col>
-                    <Col xs="4">
-                      <RestaurantMiniInfo restaurante={rest} />
-                    </Col>
-                  </>
-                })
-              }
+            {
+              promiseInProgress &&
+              <div className="section-loader">
+                <Loader mostrar={promiseInProgress} size={100} />
+              </div>
+            }
+            <Restaurante listar={restaurantes}/>
+            <Row>
+              {/* <ImageUploader
+                withIcon={true}
+                onChange={onDrop}
+                imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+                maxFileSize={5242880}
+                withPreview={true}
+              /> */}
             </Row>
           </Container>
         </section>

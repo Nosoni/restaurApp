@@ -18,5 +18,5 @@ export const restauranteGetByDescripcion = async (descripcion) => {
       'Content-Type': 'application/json'
     },
   })
-  return respuesta.data
+  return respuesta.data.data
 };

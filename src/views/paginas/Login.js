@@ -9,6 +9,10 @@ import CardFooter from "reactstrap/lib/CardFooter";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
+import { login } from "../../services/login";
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from "react-promise-tracker";
+import Loader from "../../components/Loader";
 
 export default function Login(props) {
   const schema = yup.object().shape({
@@ -18,10 +22,14 @@ export default function Login(props) {
   const { register, handleSubmit, formState: { errors }, } = useForm({
     resolver: yupResolver(schema)
   })
+  const { promiseInProgress } = usePromiseTracker();
+
   const handleClickResgitrar = () => {
     props.history.push("registro")
   }
-  const onSubmit = data => console.log(data);
+  const onSubmit = async data => {
+    const respuesta = await trackPromise(login({ usuario: data.usuario, contrasenha: data.password }))
+  }
 
   return (
     <>
@@ -32,6 +40,7 @@ export default function Login(props) {
             <Row className="justify-content-center">
               <Col lg="5">
                 <Card className="bg-secondary shadow border-0">
+                  <Loader mostrar={promiseInProgress} size={50} />
                   <CardBody className="px-lg-5 py-lg-5">
                     <div className="text-center text-muted mb-4">
                       <small>Introduzca sus credenciales</small>
@@ -48,7 +57,7 @@ export default function Login(props) {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
-                            placeholder="Usuario" 
+                            placeholder="Usuario"
                             type="text"
                             {...register("usuario")}
                           />
@@ -77,9 +86,10 @@ export default function Login(props) {
                           className="my-4"
                           color="primary"
                           type="submit"
+                          disabled={promiseInProgress}
                         >
                           Ingresar
-                          </Button>
+                        </Button>
                       </div>
                     </Form>
                   </CardBody>

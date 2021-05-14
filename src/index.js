@@ -57,7 +57,7 @@ ReactDOM.render(
         exact
         render={props => <Registro {...props} />}
       />
-      <Redirect to="/" />
+      <Redirect to="/inicio" />
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
