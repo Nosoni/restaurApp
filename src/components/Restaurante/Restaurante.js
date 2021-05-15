@@ -5,7 +5,7 @@ import { createContext } from "react";
 
 export const RestauranteEstado = createContext(null);
 
-export default function Restaurante(props) {
+export default function Restaurante() {
   const [state, dispatch] = useReducer(reducer, {
     seleccionado: {},
     mostarListado: true,
@@ -28,7 +28,7 @@ export const reducer = (state, action) => {
       return { ...state, seleccionado: action.payload }
     case Accion.MOSTRAR_INFO:
       return { ...state, mostarListado: false, mostrarInfo: true }
-    case Accion.MOSTRAR_BUSCADOR:
+    case Accion.MOSTRAR_LISTADO:
       return { ...state, mostarListado: true, mostrarInfo: false }
     default:
       return state

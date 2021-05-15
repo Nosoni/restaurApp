@@ -8,7 +8,7 @@ import Loader from "../../components/Loader";
 import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from "react-promise-tracker";
 
-export default function RestauranteListado(props) {
+export default function RestauranteListado() {
   const [restaurantes, setRestaurantes] = useState([])
   const { promiseInProgress } = usePromiseTracker();
 
@@ -58,7 +58,7 @@ export default function RestauranteListado(props) {
           {
             restaurantes.map(rest => {
               return <Col xs="4" key={rest.id}>
-                <RestaurantMiniInfo restaurante={rest} />
+                <RestaurantMiniInfo key={rest.nombre} restaurante={rest} />
               </Col>
             })
           }

@@ -20,3 +20,16 @@ export const restauranteGetByDescripcion = async (descripcion) => {
   })
   return respuesta.data.data
 };
+
+export const restauranteGetById = async (id) => {
+  const where = `${id}`
+  const url = `${server}/${servicio}/${where}`;
+  const respuesta = await axios({
+    method: 'GET',
+    url: url,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  })
+  return respuesta.data.data
+};
