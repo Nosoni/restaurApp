@@ -6,7 +6,6 @@ import { createContext } from "react";
 export const RestauranteEstado = createContext(null);
 
 export default function Restaurante(props) {
-
   const [state, dispatch] = useReducer(reducer, {
     seleccionado: {},
     mostarListado: true,
@@ -16,7 +15,7 @@ export default function Restaurante(props) {
   return (
     <React.Fragment>
       <RestauranteEstado.Provider value={{ state, dispatch }}>
-        {state.mostarListado && <RestauranteListado listar={props.listar} />}
+        {state.mostarListado && <RestauranteListado />}
         {state.mostrarInfo && <RestauranteInfo />}
       </RestauranteEstado.Provider>
     </React.Fragment >
@@ -38,6 +37,6 @@ export const reducer = (state, action) => {
 
 export const Accion = {
   SELECCIONADO: "seleccionado",
-  MOSTRAR_BUSCADOR: "mostarListado",
+  MOSTRAR_LISTADO : "mostarListado",
   MOSTRAR_INFO: "mostrarInfo",
 };

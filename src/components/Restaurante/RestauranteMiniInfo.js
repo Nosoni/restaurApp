@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Row, Col, Card, UncontrolledCarousel } from "reactstrap";
 import Rating from '@material-ui/lab/Rating';
-import { comentariosGetByRestaurante } from 'services/restaurateComentario';
+import { Accion, RestauranteEstado } from "./Restaurante"
 
 const items = [
   {
@@ -19,9 +19,15 @@ const items = [
 ];
 
 export default function RestaurantMiniInfo(props) {
+  const { dispatch } = useContext(RestauranteEstado);
   const restaurante = props.restaurante
 
+  const actualizarSelecion = (payload) => dispatch({ type: Accion.SELECCIONADO, payload });
+  const mostrarInfo = () => dispatch({ type: Accion.MOSTRAR_INFO });
+
   const buscarInfoRestaurante = () => {
+    actualizarSelecion(restaurante)
+    mostrarInfo()
     console.log("restaurante id ", restaurante.id)
   }
 
