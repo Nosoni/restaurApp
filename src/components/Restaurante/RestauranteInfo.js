@@ -30,7 +30,6 @@ export default function RestauranteInfo() {
   }
 
   const handleOnClickCancel = () => {
-    console.log("cancelar")
     actualizarSelecion({})
     mostrarListado()
   }
@@ -64,6 +63,13 @@ export default function RestauranteInfo() {
                       >
                         <div className="card-profile-actions py-4 mt-lg-0">
                           <Button
+                            color="warning"
+                            onClick={() => handleOnClickCancel()}
+                            size="sm"
+                          >
+                            Volver
+                          </Button>
+                          <Button
                             className="float-right"
                             color="default"
                             href="#pablo"
@@ -71,7 +77,7 @@ export default function RestauranteInfo() {
                             size="sm"
                           >
                             Comentar
-                    </Button>
+                          </Button>
                         </div>
                       </Col>
                       <Col className="order-lg-1" lg="4">
@@ -100,9 +106,6 @@ export default function RestauranteInfo() {
                             Horario de atención desde {restaurante.hora_apertura} hasta {restaurante.hora_cierre}
                           </div>
                         </div>
-                      </Col>
-                      <Col xs="8">
-                        <div>hola</div>
                       </Col>
                     </Row>
                   </div>
