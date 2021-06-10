@@ -26,7 +26,6 @@ export default function RestauranteListado() {
     if (event.key === "Enter") {
       setRestaurantes([])
       const respuesta = await trackPromise(restauranteGetByDescripcion(event.target.value))
-      console.log(respuesta)
       setRestaurantes(respuesta)
     }
   };

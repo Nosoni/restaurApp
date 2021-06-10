@@ -28,7 +28,6 @@ export default function RestaurantMiniInfo(props) {
   const buscarInfoRestaurante = () => {
     actualizarSelecion(restaurante)
     mostrarInfo()
-    console.log("restaurante id ", restaurante.id)
   }
 
   return (
@@ -50,6 +49,7 @@ export default function RestaurantMiniInfo(props) {
               <Rating
                 name="simple-controlled"
                 value={restaurante.promedioPuntacion}
+                readOnly
               />
             </Row>
             <p style={{ fontSize: "smaller" }}> {restaurante.descripcion.substring(0, 85) + "..."}</p>

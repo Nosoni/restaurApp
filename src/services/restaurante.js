@@ -1,4 +1,4 @@
-import { server } from "constantes/constantes";
+import { server } from "../constantes/constantes";
 const servicio = "restaurante";
 const axios = require("axios")
 
@@ -9,14 +9,11 @@ export const restauranteGetAll = async () => {
 };
 
 export const restauranteGetByDescripcion = async (descripcion) => {
-  const where = `?and=(activo.is.true,descripcion.like.*${descripcion})*`
+  const where = `?nombre="${descripcion}"`
   const url = `${server}/${servicio}${where}`;
   const respuesta = await axios({
     method: 'GET',
     url: url,
-    headers: {
-      'Content-Type': 'application/json'
-    },
   })
   return respuesta.data.data
 };

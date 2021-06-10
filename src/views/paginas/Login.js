@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button, Card, CardBody, FormGroup, Form,
   Input, InputGroupAddon, InputGroupText,
@@ -14,9 +14,14 @@ import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from "react-promise-tracker";
 import Loader from "../../components/Loader";
 
+function isObjEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
 export default function Login(props) {
+  const [userLogin, setUserLogin] = useState({});
   const schema = yup.object().shape({
-    usuario: yup.string().required("Favor ingresar usuario"),
+    username: yup.string().required("Favor ingresar usuario"),
     password: yup.string().required("Favor ingresar contraseña"),
   });;
   const { register, handleSubmit, formState: { errors }, } = useForm({
@@ -24,11 +29,30 @@ export default function Login(props) {
   })
   const { promiseInProgress } = usePromiseTracker();
 
+  useEffect(() => {
+    if (localStorage.getItem('token')?.length > 0) {
+      props.history.push("/inicio")
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isObjEmpty(userLogin)) {
+      localStorage.setItem('token', userLogin.token);
+      localStorage.setItem('usuario_id', userLogin.user.id);
+      localStorage.setItem('usuario', userLogin.user.username);
+      props.history.push("/inicio")
+    }
+  }, [userLogin])
+
   const handleClickResgitrar = () => {
     props.history.push("registro")
   }
+
   const onSubmit = async data => {
-    const respuesta = await trackPromise(login({ usuario: data.usuario, contrasenha: data.password }))
+    await trackPromise(login(data))
+      .then(respuesta => {
+        setUserLogin(respuesta)
+      })
   }
 
   return (
@@ -59,7 +83,7 @@ export default function Login(props) {
                           <Input
                             placeholder="Usuario"
                             type="text"
-                            {...register("usuario")}
+                            {...register("username")}
                           />
                         </InputGroup>
                       </FormGroup>

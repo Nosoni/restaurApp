@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button, Card, CardBody, FormGroup, Form,
   Input, InputGroupAddon, InputGroupText,
@@ -11,24 +11,33 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from "react-promise-tracker";
 import Loader from "components/Loader";
+import { usuarioCrear } from "services/usuario";
 
 export default function Registro(props) {
   const schema = yup.object().shape({
     nombre: yup.string().required("Favor ingresar Nombre"),
     apellido: yup.string().required("Favor ingresar Apellido"),
-    contacto: yup.string().required("Favor ingresar Contacto"),
+    telefono: yup.string().required("Favor ingresar Contacto"),
     email: yup.string().required("Favor ingresar Email"),
-    usuario: yup.string().required("Favor ingresar Usuario"),
+    username: yup.string().required("Favor ingresar Usuario"),
     password: yup.string().required("Favor ingresar Contraseña"),
-  });;
+  });
+
   const { register, handleSubmit, formState: { errors }, } = useForm({
     resolver: yupResolver(schema)
   })
+
   const { promiseInProgress } = usePromiseTracker();
 
+  useEffect(() => {
+    if (localStorage.getItem('token')?.length > 0) {
+      props.history.push("/inicio")
+    }
+  }, [])
+
   const onSubmit = async data => {
-    //const respuesta = await trackPromise(login1({ usuario: data.usuario, contrasenha: data.password })) 
     console.log(data);
+    const respuesta = await trackPromise(usuarioCrear(data))
   }
 
   return (
@@ -86,9 +95,9 @@ export default function Registro(props) {
                         </InputGroup>
                       </FormGroup>
                       <FormGroup
-                        className={errors.contacto?.message.length > 0 ? 'has-danger' : 'mb-3'}
+                        className={errors.telefono?.message.length > 0 ? 'has-danger' : 'mb-3'}
                       >
-                        <label className="label-invalid">{errors.contacto?.message}</label>
+                        <label className="label-invalid">{errors.telefono?.message}</label>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
@@ -98,7 +107,7 @@ export default function Registro(props) {
                           <Input
                             placeholder="Contacto"
                             type="text"
-                            {...register("contacto")}
+                            {...register("telefono")}
                           />
                         </InputGroup>
                       </FormGroup>
@@ -120,9 +129,9 @@ export default function Registro(props) {
                         </InputGroup>
                       </FormGroup>
                       <FormGroup
-                        className={errors.usuario?.message.length > 0 ? 'has-danger' : 'mb-3'}
+                        className={errors.username?.message.length > 0 ? 'has-danger' : 'mb-3'}
                       >
-                        <label className="label-invalid">{errors.usuario?.message}</label>
+                        <label className="label-invalid">{errors.username?.message}</label>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
@@ -132,7 +141,7 @@ export default function Registro(props) {
                           <Input
                             placeholder="Usuario"
                             type="text"
-                            {...register("usuario")}
+                            {...register("username")}
                           />
                         </InputGroup>
                       </FormGroup>
