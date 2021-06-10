@@ -50,8 +50,8 @@ export default function Login(props) {
 
   const onSubmit = async data => {
     await trackPromise(login(data))
-      .then(respuesta => {
-        setUserLogin(respuesta)
+      .then(user => {
+        setUserLogin(user)
       })
   }
 

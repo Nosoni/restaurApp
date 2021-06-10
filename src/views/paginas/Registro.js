@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button, Card, CardBody, FormGroup, Form,
   Input, InputGroupAddon, InputGroupText,
@@ -12,8 +12,14 @@ import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from "react-promise-tracker";
 import Loader from "components/Loader";
 import { usuarioCrear } from "services/usuario";
+import { login } from "services/login";
+
+function isObjEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
 
 export default function Registro(props) {
+  const [userLogin, setUserLogin] = useState({});
   const schema = yup.object().shape({
     nombre: yup.string().required("Favor ingresar Nombre"),
     apellido: yup.string().required("Favor ingresar Apellido"),
@@ -35,20 +41,27 @@ export default function Registro(props) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!isObjEmpty(userLogin)) {
+      localStorage.setItem('token', userLogin.token);
+      localStorage.setItem('usuario_id', userLogin.user.id);
+      localStorage.setItem('usuario', userLogin.user.username);
+      props.history.push("/inicio")
+    }
+  }, [userLogin])
+
   const onSubmit = async data => {
-    console.log(data);
-    const respuesta = await trackPromise(usuarioCrear(data))
+    const respuesta = await trackPromise(usuarioCrear(data)
+      .then(() => login({ username: data.username, password: data.password })))
+      .then(user => {
+        setUserLogin(user)
+      })
   }
 
   return (
     <>
       <NavbarE />
       <main>
-        {/* <UncontrolledAlert color="success" isOpen={visible} toggle={onDismiss} >
-          <span className="alert-inner--text ml-1">
-            {mensaje}
-          </span>
-        </UncontrolledAlert> */}
         <section className="section">
           <Container className="pt-lg-7">
             <Row className="justify-content-center">

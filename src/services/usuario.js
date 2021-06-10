@@ -3,9 +3,7 @@ const servicio = "usuario";
 const axios = require("axios")
 
 export const usuarioCrear = async (usuario) => {
-  console.log(JSON.stringify(usuario))
   const url = `${server}/${servicio}`;
-  console.log(url)
   await axios({
     method: 'POST',
     url: url,

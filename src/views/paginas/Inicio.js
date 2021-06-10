@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  Container, Row, Button
+  Container, Row, Button, Col
 } from "reactstrap";
 import NavbarE from "components/Navbars/NavbarE";
 import Restaurante from "../../components/Restaurante/Restaurante";
@@ -35,7 +35,6 @@ export default function Inicio(params) {
 
     const loadImages = async () => {
       const urls = await fetchImages();
-      console.log("urls", urls)
       setFiles(urls);
     }
     loadImages();
@@ -57,7 +56,9 @@ export default function Inicio(params) {
               withPreview={true}
             /> */}
           </Row>
-          {/* {files.map((file, index) => <img key={index} src={file} />)} */}
+          <Row>
+            {files.map((file, index) => <Col xs="4"><img key={index} src={file} /></Col>)}
+          </Row>
         </Container>
       </main>
     </>

@@ -1,29 +1,46 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Row, Col, Card, UncontrolledCarousel } from "reactstrap";
 import Rating from '@material-ui/lab/Rating';
 import { Accion, RestauranteEstado } from "./Restaurante"
-
-const items = [
-  {
-    src: require("assets/img/theme/img-1-1200x1000.jpg"),
-    altText: "",
-    caption: "",
-    header: ""
-  },
-  {
-    src: require("assets/img/theme/img-2-1200x1000.jpg"),
-    altText: "",
-    caption: "",
-    header: ""
-  }
-];
+import { store } from '../../constantes/firebase'
 
 export default function RestaurantMiniInfo(props) {
   const { dispatch } = useContext(RestauranteEstado);
   const restaurante = props.restaurante
+  const [imagenUrl, setImagenUrl] = useState([]);
+  const [items, setItems] = useState([]);
 
   const actualizarSelecion = (payload) => dispatch({ type: Accion.SELECCIONADO, payload });
   const mostrarInfo = () => dispatch({ type: Accion.MOSTRAR_INFO });
+
+  useEffect(() => {
+    const loadImages = async (nombre) => {
+      const urls = await buscarImagenRestaurante(nombre);
+      setImagenUrl(urls);
+    }
+
+    loadImages(restaurante.nombre);
+  }, [restaurante])
+
+  useEffect(() => {
+    const imagenes = imagenUrl.map(url => ({
+      src: url,
+      altText: "",
+      caption: "",
+      header: ""
+    }))
+
+    console.log(imagenes)
+    setItems(imagenes)
+  }, [imagenUrl])
+
+  const buscarImagenRestaurante = async (nombre) => {
+    var storageRef = store.ref(nombre);
+    let result = await storageRef.child("imagen").listAll();
+    let urlPromises = result.items.map(imageRef => imageRef.getDownloadURL());
+
+    return Promise.all(urlPromises);
+  }
 
   const buscarInfoRestaurante = () => {
     actualizarSelecion(restaurante)

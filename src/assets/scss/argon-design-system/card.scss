@@ -9,6 +9,19 @@
   }
 }
 
+.card-reservacion{
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.card-reservacion::-webkit-scrollbar {
+    width: 10px;
+}
+.card-reservacion::-webkit-scrollbar-thumb {
+    background: rgb(179, 177, 177);
+    border-radius: 10px;
+  }
+
 .profile-page {
     margin-top: 320px;
 

@@ -23,34 +23,20 @@ import "assets/vendor/nucleo/css/nucleo.css";
 import "assets/vendor/font-awesome/css/font-awesome.min.css";
 import "assets/scss/argon-design-system-react.scss?v1.1.0";
 
-import Index from "views/Index.js";
-import Landing from "./views/examples/Landing.js";
 import Login from './views/paginas/Login'
 import Registro from './views/paginas/Registro'
 import Profile from "views/examples/Profile.js";
-import Register from "views/examples/Register.js";
-import Inicio from "views/paginas/Inicio";
+import Inicio from "./views/paginas/Inicio";
 
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
-      <Route path="/" exact render={props => <Index {...props} />} />
       <Route path="/inicio" exact render={props => <Inicio {...props} />} />
-      <Route
-        path="/landing-page"
-        exact
-        render={props => <Landing {...props} />}
-      />
       <Route path="/login" exact render={props => <Login {...props} />} />
       <Route
         path="/profile-page"
         exact
         render={props => <Profile {...props} />}
-      />
-      <Route
-        path="/register-page"
-        exact
-        render={props => <Register {...props} />}
       />
       <Route
         path="/registro"

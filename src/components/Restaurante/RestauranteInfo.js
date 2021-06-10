@@ -2,12 +2,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Accion, RestauranteEstado } from "./Restaurante"
 import {
   Button, Card, Row, Col, Modal, CardHeader, CardBody, Input,
-  FormGroup, InputGroup, InputGroupAddon, InputGroupText
+  FormGroup, InputGroup, InputGroupAddon, InputGroupText, Form
 } from "reactstrap";
 import { restauranteGetById } from 'services/restaurante';
 import Loader from 'components/Loader';
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from "react-promise-tracker";
+import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 import CardFooter from 'reactstrap/lib/CardFooter';
 import RestauranteComentario from './RestauranteComentario';
 import Rating from '@material-ui/lab/Rating';
@@ -19,6 +18,11 @@ import {
 import { ViewState } from '@devexpress/dx-react-scheduler';
 import ReactDatetime from "react-datetime";
 import { comentarioAgregar } from 'services/comentario';
+import { store } from '../../constantes/firebase'
+import Select from 'react-select';
+import { mesaGetByRestaurante } from 'services/mesa';
+import { reservaGetByRestaurante } from 'services/reserva';
+import moment from 'moment';
 
 export default function RestauranteInfo() {
   const { state, dispatch } = useContext(RestauranteEstado);
@@ -30,15 +34,41 @@ export default function RestauranteInfo() {
   const [puntuacion, setPuntuacion] = useState('')
   const [comentario, setComentario] = useState('')
   const [diaReservacion, setDiaReservacion] = useState()
+  const [logoUrl, setLogoUrl] = useState([]);
+  const [selectOpciones, setSelectOpciones] = useState([])
+  const [mesaConsultar, setMesaConsultar] = useState()
+  const [reservas, setReservas] = useState([])
+
+  const customStyles = {
+    option: (provided, state) => ({
+      ...provided,
+      color: "#172b4d",
+    }),
+  }
 
   const actualizarSelecion = (payload) => dispatch({ type: Accion.SELECCIONADO, payload });
   const mostrarListado = () => dispatch({ type: Accion.MOSTRAR_LISTADO });
 
   useEffect(() => {
+    const loadImages = async (nombre) => {
+      const urls = await trackPromise(buscarLogoRestaurante(nombre));
+      setLogoUrl(urls);
+    }
+
     if (state.seleccionado.id) {
       buscarInfoRestaurante(state.seleccionado.id)
+      loadImages(state.seleccionado.nombre);
+      buscarInfoMesas(state.seleccionado.id)
     }
   }, [state.seleccionado])
+
+  const buscarLogoRestaurante = async (nombre) => {
+    var storageRef = store.ref(nombre);
+    let result = await storageRef.child("logo").listAll();
+    let urlPromises = result.items.map(imageRef => imageRef.getDownloadURL());
+
+    return Promise.all(urlPromises);
+  }
 
   const buscarInfoRestaurante = async (id) => {
     const respuesta = await trackPromise(restauranteGetById(id))
@@ -50,7 +80,6 @@ export default function RestauranteInfo() {
     mostrarListado()
   }
 
-  //TODO
   const handleOnClickAgregarComentario = () => {
     agregarComentario()
     setModal(false)
@@ -62,6 +91,35 @@ export default function RestauranteInfo() {
       usuario_id, restaurante_id: state.seleccionado.id,
       mensaje: comentario, puntuacion
     })
+  }
+
+  const buscarInfoMesas = async (restaurante_id) => {
+    const mesas = await mesaGetByRestaurante(restaurante_id)
+    let opciones = mesas.map(dato => { return { value: dato.id, label: "Nro. " + dato.numero + ". Cant personas " + dato.cant_personas } })
+    setSelectOpciones(opciones)
+  }
+
+  const handleOnClickConsultar = async () => {
+    if (!diaReservacion) {
+      return
+    }
+    if (!mesaConsultar) {
+      return
+    }
+    const respuestafilter = await reservaGetByRestaurante(state.seleccionado.id)
+      .then(response => {
+        return response.filter(reserva => {
+          console.log(moment(reserva.fecha_desde).format())
+          console.log(moment(reserva.fecha_desde))
+          console.log(moment(reserva.fecha_desde).utc().toDate())
+          return reserva.mesa_id === mesaConsultar && moment(reserva.fecha_desde).format("DD/MM/YYYY") === diaReservacion.format("DD/MM/YYYY")
+        })
+      })
+
+    const schedulerData = respuestafilter.map(reserva => (
+      { startDate: moment(reserva.fecha_desde).format(), endDate: moment(reserva.fecha_hasta).format() }))
+    console.log(schedulerData)
+    setReservas(schedulerData)
   }
 
   return (
@@ -83,7 +141,7 @@ export default function RestauranteInfo() {
                           <img
                             alt="..."
                             className="rounded-circle"
-                            src={require("assets/img/theme/team-4-800x800.jpg")}
+                            src={logoUrl}
                           />
                         </div>
                       </Col>
@@ -147,51 +205,80 @@ export default function RestauranteInfo() {
                           Hacer una reservación
                         </h3>
                         <Row>
-                          <Col xs="3">
-                            <small className="h6 font-weight-300">
-                              Seleccione el día
-                            </small>
-                          </Col>
-                          <Col xs='5'>
-                            <FormGroup>
-                              <InputGroup>
-                                <InputGroupAddon addonType="prepend">
-                                  <InputGroupText>
-                                    <i className="ni ni-calendar-grid-58" />
-                                  </InputGroupText>
-                                </InputGroupAddon>
-                                <ReactDatetime
-                                  onChange={(value) => setDiaReservacion(value)}
-                                  timeFormat={false}
-                                />
-                              </InputGroup>
-                            </FormGroup>
-                          </Col>
-                          <Col xs='4'>
-                            <Button
-                              color="info"
-                              size="sm"
-                            >
-                              Consultar
-                            </Button>
+                          <Col lg="12">
+                            <Card className="card-reservacion">
+                              <CardBody>
+                                <Row>
+                                  <Col xs="6">
+                                    <FormGroup>
+                                      <label className="h6 font-weight-300">
+                                        Seleccione el día
+                                    </label>
+                                      <FormGroup>
+                                        <InputGroup>
+                                          <InputGroupAddon addonType="prepend">
+                                            <InputGroupText>
+                                              <i className="ni ni-calendar-grid-58" />
+                                            </InputGroupText>
+                                          </InputGroupAddon>
+                                          <ReactDatetime
+                                            onChange={(value) => setDiaReservacion(value)}
+                                            timeFormat={false}
+                                            defaultValue={new Date()}
+                                            dateFormat={moment().format("DD/MM/YYYY")}
+                                          />
+                                        </InputGroup>
+                                      </FormGroup>
+                                      <Button
+                                        color="info"
+                                        size="sm"
+                                        onClick={() => handleOnClickConsultar()}
+                                      >
+                                        Consultar
+                                      </Button>
+                                    </FormGroup>
+                                  </Col>
+                                  <Col xs="6">
+                                    <FormGroup>
+                                      <label className="h6 font-weight-300">
+                                        Seleccione la mesa
+                                      </label>
+                                      <Select
+                                        className="basic-single"
+                                        classNamePrefix="select"
+                                        options={selectOpciones}
+                                        onChange={(seleccion) => setMesaConsultar(seleccion.value)}
+                                        name="permiso"
+                                        styles={customStyles}
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                              </CardBody>
+                            </Card>
                           </Col>
                         </Row>
-                        <div>
-                          <Scheduler
-                            data={schedulerData}
-                            locale={"es-PY"}
-                            height={350}
-                          >
-                            <ViewState
-                              currentDate={"2018-11-01"}
-                            />
-                            <DayView
-                              startDayHour={19}
-                              endDayHour={23}
-                            />
-                            <Appointments />
-                          </Scheduler>
-                        </div>
+
+                        <Row className="justify-content-center mb-3">
+                          <Col lg="12">
+                            <Card>
+                              <Scheduler
+                                data={reservas}
+                                locale={"es-PY"}
+                                height={350}
+                              >
+                                <ViewState
+                                  currentDate={diaReservacion}
+                                />
+                                <DayView
+                                  startDayHour={9}
+                                  endDayHour={23}
+                                />
+                                <Appointments />
+                              </Scheduler>
+                            </Card>
+                          </Col>
+                        </Row>
                       </Col>
                     </Row>
                   </div>
