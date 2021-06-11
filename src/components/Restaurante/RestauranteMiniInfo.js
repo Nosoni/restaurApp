@@ -29,8 +29,6 @@ export default function RestaurantMiniInfo(props) {
       caption: "",
       header: ""
     }))
-
-    console.log(imagenes)
     setItems(imagenes)
   }, [imagenUrl])
 

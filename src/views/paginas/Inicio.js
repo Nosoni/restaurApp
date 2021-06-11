@@ -17,9 +17,8 @@ export default function Inicio(params) {
 
   const hazlo = () => {
     pictures.map(file => {
-      console.log("file", file)
       var storageRef = store.ref('img/' + file.name);
-      var task = storageRef.put(file).then(r => console.log("ok")).catch(e => console.log(e));
+      var task = storageRef.put(file)
     })
   }
 

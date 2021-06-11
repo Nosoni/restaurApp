@@ -23,6 +23,7 @@ import Select from 'react-select';
 import { mesaGetByRestaurante } from 'services/mesa';
 import { reservaGetByRestaurante } from 'services/reserva';
 import moment from 'moment';
+import { reservaAgregar } from 'services/reserva';
 
 export default function RestauranteInfo() {
   const { state, dispatch } = useContext(RestauranteEstado);
@@ -30,7 +31,8 @@ export default function RestauranteInfo() {
   const { promiseInProgress } = usePromiseTracker();
   const userLogueado = localStorage.getItem('token')?.length > 0;
   const usuario_id = localStorage.getItem('usuario_id');
-  const [modal, setModal] = useState(false)
+  const [modalComentario, setModalComentario] = useState(false)
+  const [modalReserva, setModalReserva] = useState(false)
   const [puntuacion, setPuntuacion] = useState('')
   const [comentario, setComentario] = useState('')
   const [diaReservacion, setDiaReservacion] = useState()
@@ -38,6 +40,8 @@ export default function RestauranteInfo() {
   const [selectOpciones, setSelectOpciones] = useState([])
   const [mesaConsultar, setMesaConsultar] = useState()
   const [reservas, setReservas] = useState([])
+  const [horaInicio, setHoraInicio] = useState()
+  const [horaFin, setHoraFin] = useState()
 
   const customStyles = {
     option: (provided, state) => ({
@@ -82,7 +86,7 @@ export default function RestauranteInfo() {
 
   const handleOnClickAgregarComentario = () => {
     agregarComentario()
-    setModal(false)
+    setModalComentario(false)
     buscarInfoRestaurante(state.seleccionado.id)
   }
 
@@ -90,7 +94,33 @@ export default function RestauranteInfo() {
     await comentarioAgregar({
       usuario_id, restaurante_id: state.seleccionado.id,
       mensaje: comentario, puntuacion
-    })
+    }, localStorage.getItem("token"))
+  }
+
+  const handleOnClickAgregarReserva = () => {
+    try {
+      if (!horaInicio) {
+        return
+      }
+      if (!horaFin) {
+        return
+      }
+      agregarReserva()
+      setModalReserva(false)
+      buscarInfoRestaurante(state.seleccionado.id)
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
+  const agregarReserva = async () => {
+    await reservaAgregar({
+      restaurante_id: state.seleccionado.id,
+      mesa_id: mesaConsultar,
+      usuario_id,
+      fecha_desde: horaInicio.format(),
+      fecha_hasta: horaFin.format()
+    }, localStorage.getItem("token"))
   }
 
   const buscarInfoMesas = async (restaurante_id) => {
@@ -109,16 +139,12 @@ export default function RestauranteInfo() {
     const respuestafilter = await reservaGetByRestaurante(state.seleccionado.id)
       .then(response => {
         return response.filter(reserva => {
-          console.log(moment(reserva.fecha_desde).format())
-          console.log(moment(reserva.fecha_desde))
-          console.log(moment(reserva.fecha_desde).utc().toDate())
           return reserva.mesa_id === mesaConsultar && moment(reserva.fecha_desde).format("DD/MM/YYYY") === diaReservacion.format("DD/MM/YYYY")
         })
       })
 
     const schedulerData = respuestafilter.map(reserva => (
       { startDate: moment(reserva.fecha_desde).format(), endDate: moment(reserva.fecha_hasta).format() }))
-    console.log(schedulerData)
     setReservas(schedulerData)
   }
 
@@ -164,7 +190,7 @@ export default function RestauranteInfo() {
                               className="float-right"
                               color="default"
                               // onClick={e => e.preventDefault()}
-                              onClick={() => setModal(true)}
+                              onClick={() => setModalComentario(true)}
                               size="sm"
                             >
                               Comentar
@@ -224,8 +250,8 @@ export default function RestauranteInfo() {
                                           <ReactDatetime
                                             onChange={(value) => setDiaReservacion(value)}
                                             timeFormat={false}
+                                            dateFormat="DD/MM/YYYY"
                                             defaultValue={new Date()}
-                                            dateFormat={moment().format("DD/MM/YYYY")}
                                           />
                                         </InputGroup>
                                       </FormGroup>
@@ -252,13 +278,20 @@ export default function RestauranteInfo() {
                                         styles={customStyles}
                                       />
                                     </FormGroup>
+                                    {
+                                      userLogueado && <Button
+                                        color="success"
+                                        size="sm"
+                                        onClick={() => setModalReserva(true)}
+                                      >
+                                        Reservar
+                                    </Button>}
                                   </Col>
                                 </Row>
                               </CardBody>
                             </Card>
                           </Col>
                         </Row>
-
                         <Row className="justify-content-center mb-3">
                           <Col lg="12">
                             <Card>
@@ -291,8 +324,8 @@ export default function RestauranteInfo() {
             <Modal
               className="modal-dialog-centered"
               size="sm"
-              isOpen={modal}
-              toggle={() => setModal(false)}
+              isOpen={modalComentario}
+              toggle={() => setModalComentario(false)}
             >
               <div className="modal-body p-0">
                 <Card className="bg-secondary shadow border-0">
@@ -326,7 +359,74 @@ export default function RestauranteInfo() {
                           className="my-4"
                           color="warning"
                           size="sm"
-                          onClick={() => setModal(false)}
+                          onClick={() => setModalComentario(false)}
+                        >
+                          Cancelar
+                        </Button>
+                      </Row>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+            </Modal>
+            <Modal
+              className="modal-dialog-centered"
+              size="sm"
+              isOpen={modalReserva}
+              toggle={() => setModalReserva(false)}
+            >
+              <div className="modal-body p-0">
+                <Card className="bg-secondary shadow border-0">
+                  <CardBody className="px-lg-5 py-lg-5">
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="ni ni-calendar-grid-58" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <ReactDatetime
+                          inputProps={{
+                            placeholder: "Hora inicio"
+                          }}
+                          defaultValue={diaReservacion}
+                          dateFormat={false}
+                          onChange={(value) => setHoraInicio(value)}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="ni ni-calendar-grid-58" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <ReactDatetime
+                          inputProps={{
+                            placeholder: "Hora Fin"
+                          }}
+                          defaultValue={diaReservacion}
+                          dateFormat={false}
+                          onChange={(value) => setHoraFin(value)}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                    <div className="text-center">
+                      <Row className="justify-content-center">
+                        <Button className="my-4"
+                          color="primary"
+                          type="button"
+                          size="sm"
+                          onClick={() => handleOnClickAgregarReserva()}
+                        >
+                          Agregar Reserva
+                        </Button>
+                        <Button
+                          className="my-4"
+                          color="warning"
+                          size="sm"
+                          onClick={() => setModalReserva(false)}
                         >
                           Cancelar
                         </Button>
@@ -341,7 +441,3 @@ export default function RestauranteInfo() {
     </>
   )
 }
-const schedulerData = [
-  { startDate: '2018-11-01T19:45', endDate: '2018-11-01T20:00', title: 'Meeting' },
-  { startDate: '2018-11-01T20:00', endDate: '2018-11-01T22:00', title: 'Go to a gym' },
-];

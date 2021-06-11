@@ -9,7 +9,7 @@ export const restauranteGetAll = async () => {
 };
 
 export const restauranteGetByDescripcion = async (descripcion) => {
-  const where = `?nombre="${descripcion}"`
+  const where = `?nombre=${descripcion}`
   const url = `${server}/${servicio}${where}`;
   const respuesta = await axios({
     method: 'GET',
